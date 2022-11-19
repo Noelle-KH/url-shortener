@@ -3,6 +3,7 @@ const exphbs = require('express-handlebars')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const Url = require('./models/url-model')
+const getShortenUrl = require('./randomShortenUrl')
 
 if (process.env.NODE_URL !== 'production') {
   require('dotenv').config()
@@ -34,12 +35,21 @@ app.get('/', (req, res) => {
 })
 
 app.post('/shorten', (req, res) => {
-  const url = req.body.url
-  Url.findOne({ url })
+  const trueUrl = req.body.trueUrl
+  Url.findOne({ trueUrl })
     .lean()
     .then(url => {
-      const shortenUrl = `${localhost}/${url.shortenUrl}`
-      res.render('shorten', { shortenUrl })
+      if (!url) {
+        const getUrl = getShortenUrl()
+        const shortenUrl = `${localhost}/${getUrl}`
+        Url.create({
+          trueUrl, shortenUrl: getUrl
+        })
+        res.render('shorten', { shortenUrl })
+      } else {
+        const shortenUrl = `${localhost}/${url.shortenUrl}`
+        res.render('shorten', { shortenUrl })
+      }
     })
     .catch(error => console.log(error))
 })
@@ -49,7 +59,7 @@ app.get('/:shortenUrl', (req, res) => {
   Url.findOne({ shortenUrl })
     .lean()
     .then(url => {
-      res.redirect(url.url)
+      res.redirect(url.trueUrl)
     })
     .catch(error => console.log(error))
 })
