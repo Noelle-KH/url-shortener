@@ -1,8 +1,8 @@
-// ! 差縮短網址的函式、連結mongoose及重構
 const express = require('express')
 const exphbs = require('express-handlebars')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
+const Url = require('./models/url-model')
 
 if (process.env.NODE_URL !== 'production') {
   require('dotenv').config()
@@ -35,7 +35,23 @@ app.get('/', (req, res) => {
 
 app.post('/shorten', (req, res) => {
   const url = req.body.url
-  res.render('shorten', { url })
+  Url.findOne({ url })
+    .lean()
+    .then(url => {
+      const shortenUrl = `${localhost}/${url.shortenUrl}`
+      res.render('shorten', { shortenUrl })
+    })
+    .catch(error => console.log(error))
+})
+
+app.get('/:shortenUrl', (req, res) => {
+  const shortenUrl = req.params.shortenUrl
+  Url.findOne({ shortenUrl })
+    .lean()
+    .then(url => {
+      res.redirect(url.url)
+    })
+    .catch(error => console.log(error))
 })
 
 app.listen(port, () => {
