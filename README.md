@@ -1,7 +1,7 @@
 # 短網址產生器
 可以將長網址轉換成短網址的產生器
 
-<img src='resource/preview.png'>
+<img src='./public/images/preview.png'>
 
 ## 功能
 * 輸入網址點擊Shorten按鈕後會得到縮短後的網址
