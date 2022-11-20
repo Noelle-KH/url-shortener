@@ -15,7 +15,10 @@ router.post('/', (req, res) => {
         Url.create({
           trueUrl, shortenUrl: getUrl
         })
-        res.render('shorten', { shortenUrl })
+          .then(() => {
+            res.render('shorten', { shortenUrl })
+          })
+          .catch(error => console.log(error))
       } else {
         const shortenUrl = `${localhost}/${url.shortenUrl}`
         res.render('shorten', { shortenUrl })
