@@ -11,7 +11,9 @@ router.get('/:shortenUrl', (req, res) => {
   Url.findOne({ shortenUrl })
     .lean()
     .then(url => {
-      res.redirect(url.trueUrl)
+      if (url) {
+        res.redirect(url.trueUrl)
+      }
     })
     .catch(error => console.log(error))
 })
